@@ -1,7 +1,7 @@
 import std/options
 
 import atom
-import sexpression
+import sexpr
 import token
 
 
@@ -83,10 +83,6 @@ proc sExpression(p: var Parser): SExpr =
     discard consume(p, tkRightParen, "expected )")
 
     return sentinel.consCell.second
-
-
-
-
 
 
 proc expression(p: var Parser): SExpr =

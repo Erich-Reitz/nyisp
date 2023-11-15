@@ -2,7 +2,6 @@ import std/strutils
 
 
 import atom
-import atomkind
 import lexutils
 import scanner
 import token

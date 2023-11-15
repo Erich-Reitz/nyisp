@@ -2,10 +2,11 @@ import std/options
 
 import atom
 
-type TokenType* = enum
-  tkLeftParen, tkRightParen, tkAtom, tkEOF
 
 type
+  TokenType* = enum
+    tkLeftParen, tkRightParen, tkAtom, tkEOF
+
   Token* = object
     typ*: TokenType
     atom*: Option[Atom]

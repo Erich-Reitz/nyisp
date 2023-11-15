@@ -4,8 +4,6 @@ import impl/interpreter
 
 proc run(program: string): int =
     let tokens = lex(program)
-    for t in tokens:
-        echo t.typ
     let expressions = parse(tokens)
     return interpret(expressions)
 

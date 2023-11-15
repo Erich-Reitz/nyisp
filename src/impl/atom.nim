@@ -1,26 +1,36 @@
-import atomkind
-
 type
+  AtomKind* = enum akNil, akTrue, akNum, akString, akIdentifier
+
   Atom* = object
     case kind*: AtomKind
     of akNil, akTrue: _: bool
-    of akString, akIdentifier: strVal: string
-    of akNumber: numVal: float
+    of akString, akIdentifier: strVal*: string
+    of akNum: numVal*: float
 
 func initAtom*(num: float): Atom =
-  Atom(kind: akNumber, numVal: num)
+  Atom(kind: akNum, numVal: num)
 
-# hfs thats awesome
+
 func initAtom*(kind: akString..akIdentifier, str: string): Atom =
   Atom(kind: kind, strVal: str)
 
 func initNilAtom*(): Atom =
   Atom(kind: akNil)
 
+func toNum*(a: Atom): float =
+  case a.kind
+  of akNum: result = a.numVal
+  else: raise newException(Exception, "a.kind != akNum")
+
+func toStr*(a: Atom): string =
+  case a.kind
+  of akString, akIdentifier: result = a.strVal
+  else: raise newException(Exception, "a.kind != akString")
+
 proc `$`*(a: Atom): string =
   case a.kind
   of akNil: result = "nil"
-  of akTrue: result = "true"
+  of akTrue: result = "t"
   of akString: result = a.strVal
   of akIdentifier: result = a.strVal
-  of akNumber: result = $a.numVal
+  of akNum: result = $a.numVal
