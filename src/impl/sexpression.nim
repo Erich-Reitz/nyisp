@@ -1,5 +1,4 @@
 import atom
-import atomkind
 
 type
     SExprKind = enum skAtom, skConsCell
