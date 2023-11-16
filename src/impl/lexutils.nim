@@ -13,7 +13,12 @@ proc gatherWhile(s: string, predicate: proc (
 
 proc predGatherNumber(): proc(c: char): bool =
     var periodEncountered = false
+    var isFirst = true
     return proc(c: char): bool =
+        if c == '-' and isFirst:
+            isFirst = false
+            return true
+        isFirst = false
         if isDigit(c): return true
 
         if c == '.' and not periodEncountered:
@@ -24,7 +29,6 @@ proc predGatherNumber(): proc(c: char): bool =
 
 proc lFloat*(str: string): float =
     let floatStr = gatherWhile(str, predGatherNumber())
-
     parseFloat(floatStr)
 
 
@@ -43,7 +47,7 @@ proc lStr*(s: var Scanner): string =
 
 
 proc lIden*(s: var Scanner): string =
-    while isAlphaAscii(peek(s)) or peek(s) == '?':
+    while isAlphaNumeric(peek(s)) or peek(s) == '?':
         discard advance(s)
 
     s.source.substr(s.start, s.current - 1)

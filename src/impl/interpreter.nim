@@ -1,32 +1,169 @@
+import std/options
+
 import atom
 import sexpr
 
 proc evaluate(env: var Env, exp: SExpr): SExpr
 type EvalError = object of CatchableError
 
+proc biEqual(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(equalValues(car(args), car(cdr(args)))))
+
+proc biLess(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(toNum(car(args)) < toNum(car(cdr(args)))))
+
+proc biGreater(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(toNum(car(args)) > toNum(car(cdr(args)))))
+
+proc biCar(env: var Env, args: SExpr): SExpr =
+    let res = car(car(args))
+    if res == nil:
+        raise newException(EvalError, "car of empty list")
+    return res
+
+proc biCdr(env: var Env, args: SExpr): SExpr =
+    let res = cdr(car(args))
+    if res == nil:
+        raise newException(EvalError, "cdr of empty list")
+    return res
+
 proc biPlus(env: var Env, args: SExpr): SExpr =
     var res: float = 0.0
-    var e_ptr = args
-    while e_ptr != nil:
-        res += toNum(car(e_ptr))
-        e_ptr = cdr(e_ptr)
+    var ePtr = args
+    while ePtr != nil:
+        res += toNum(car(ePtr))
+        ePtr = cdr(ePtr)
 
     newExpr(initAtom(res))
 
 proc biMinus(env: var Env, args: SExpr): SExpr =
-    var e_ptr = args
-    var res = toNum(car(e_ptr))
-    e_ptr = cdr(e_ptr)
-    while e_ptr != nil:
-        res -= toNum(car(e_ptr))
-        e_ptr = cdr(e_ptr)
+    var ePtr = args
+    var res = toNum(car(ePtr))
+    ePtr = cdr(ePtr)
+    while ePtr != nil:
+        res -= toNum(car(ePtr))
+        ePtr = cdr(ePtr)
 
     newExpr(initAtom(res))
 
+proc biStar(env: var Env, args: SExpr): SExpr =
+    var res: float = 1.0
+    var ePtr = args
+    while ePtr != nil:
+        res *= toNum(car(ePtr))
+        ePtr = cdr(ePtr)
+
+    newExpr(initAtom(res))
+
+
+proc biSlash(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom((toNum(car(args))) / toNum(car(cdr(args)))))
+
+
 proc biSet(env: var Env, args: SExpr): SExpr =
-    let varname = toStr(car(args))
-    let value = evaluate(env, cdr(args))
+    var it = args
+    let varname = toStr(car(it))
+    it = cdr(it)
+    let value = evaluate(env, car(it))
     env.define(varname, value)
+
+
+proc biDefine(env: var Env, args: SExpr): SExpr =
+    var it = args
+    let fnName = toStr(car(it))
+    it = cdr(it)
+    let paramExpr = car(it)
+    it = cdr(it)
+    let body = car(it)
+
+    let newFn = proc(e: var Env, args: SExpr): SExpr =
+        var localEnv = newEnv()
+        localEnv.vars = e.vars
+
+        var paramIt = paramExpr
+        var argIt = args
+        while paramIt != nil and argIt != nil:
+            let paramName = toStr(car(paramIt))
+            let argValue = evaluate(localEnv, car(argIt))
+            define(localEnv, paramName, argValue)
+
+            paramIt = cdr(paramIt)
+            argIt = cdr(argIt)
+
+        return evaluate(localEnv, body)
+
+    define(env, fnName, newFnExpr(newFn))
+
+    newExpr(initAtom(akIdentifier, fnName))
+
+proc biNUMBERQ(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(car(args).kind == skAtom and car(args).atom.kind == akNum))
+
+proc biSYMBOLQ(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(car(args).kind == skAtom and car(args).atom.kind == akIdentifier))
+
+proc biLISTQ(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(car(args).kind != skAtom))
+
+proc biNILQ(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(car(args).kind == skAtom and car(args).atom.kind == akNil))
+
+proc biANDQ(env: var Env, args: SExpr): SExpr =
+    var ePtr = args
+    while ePtr != nil:
+        if isNilExpr(evaluate(env, car(ePtr))):
+            return newExpr(initAtom(false))
+
+        ePtr = cdr(ePtr)
+
+    newExpr(initAtom(true))
+
+proc biORQ(env: var Env, args: SExpr): SExpr =
+    var ePtr = args
+    while ePtr != nil:
+        if isNilExpr(evaluate(env, car(ePtr))) == false:
+            return newExpr(initAtom(true))
+
+        ePtr = cdr(ePtr)
+
+    newExpr(initAtom(false))
+
+
+proc biCons(env: var Env, args: SExpr): SExpr =
+    cons(evaluate(env, car(args)), evaluate(env, cdr(args)))
+
+
+proc biList(env: var Env, args: SExpr): SExpr =
+    if args == nil:
+        return nil
+
+    var argit = args
+    var evaluated = evaluate(env, car(argit))
+    var head = cons(evaluated, nil)
+    var cur = head
+
+    argit = cdr(argit)
+
+    while argit != nil:
+        cur.setCdr(cons(evaluate(env, car(argit)), nil))
+        cur = cur.cdr
+        argit = cdr(argit)
+
+    head
+
+
+proc biCond(env: var Env, args: SExpr): SExpr =
+    var condValuePair = args
+    while condValuePair != nil:
+        let cond = car(car(condValuePair))
+        let resultExpr = cdr(car(condValuePair))
+        let conditionResult = evaluate(env, cond)
+        if isNilExpr(conditionResult) == false:
+            return evaluate(env, resultExpr)
+
+        condValuePair = cdr(condValuePair)
+
+    newExpr(initAtom(false))
 
 proc evaluteArgs(env: var Env, args: SExpr): SExpr =
     if args == nil:
@@ -34,14 +171,32 @@ proc evaluteArgs(env: var Env, args: SExpr): SExpr =
 
     cons(evaluate(env, car(args)), evaluteArgs(env, cdr(args)))
 
-proc apply(env: var Env, exp: SExpr, cdr: SExpr): SExpr =
-    assert (exp.kind == skFn)
-    var args = cdr
 
-    if exp.delayEval == false:
-        args = evaluteArgs(env, args)
+proc len(args: SExpr): int =
+    var ePtr = args
+    while ePtr != nil:
+        result += 1
+        ePtr = cdr(ePtr)
 
-    exp.fn(env, args)
+
+
+proc assertArity(exp: SExpr, args: SExpr): SExpr =
+    if isSome(exp.arity) and len(args) != exp.arity.get:
+        raise newException(EvalError, "wrong number of arguments: " &
+                $exp.arity.get & " expected, got " & $len(args))
+
+    args
+
+
+proc processArgs(env: var Env, fnExpr: SExpr, args: SExpr): SExpr =
+    assert (fnExpr.kind == skFn)
+    if fnExpr.delayEval == false:
+        return assertArity(fnExpr, evaluteArgs(env, args))
+
+    return assertArity(fnExpr, args)
+
+proc doFn(env: var Env, exp: SExpr, args: SExpr): SExpr =
+    exp.fn(env, processArgs(env, exp, args))
 
 proc evaluate(env: Env, a: Atom): SExpr =
     if a.kind == akIdentifier:
@@ -53,10 +208,13 @@ proc evaluate(env: Env, a: Atom): SExpr =
     newExpr(a)
 
 proc evaluate(env: var Env, cc: ConsCell): SExpr =
-    let fn = evaluate(env, cc.first)
+    if cc.cdr == nil:
+        return evaluate(env, cc.car)
+
+    let fn = evaluate(env, cc.car)
     case fn.kind:
-    of skFn: return apply(env, fn, cc.second)
-    else: return newExpr(cc)
+    of skFn: result = doFn(env, fn, cc.cdr)
+    else: result = newExpr(cc)
 
 
 proc evaluate(env: var Env, exp: SExpr): SExpr =
@@ -64,14 +222,40 @@ proc evaluate(env: var Env, exp: SExpr): SExpr =
         return nil
 
     case exp.kind:
-    of skAtom: return evaluate(env, exp.atom)
-    of skConsCell: return evaluate(env, exp.consCell)
-    of skFn: return exp
+    of skAtom: result = evaluate(env, exp.atom)
+    of skConsCell: result = evaluate(env, exp.consCell)
+    of skFn: result = exp
+
 
 proc defineBuiltins(env: var Env) =
-    env.define("+", newExpr(biPlus))
-    env.define("-", newExpr(biMinus))
-    env.define("set", newExpr(biSet, true))
+    # operators
+    env.define("+", newFnExpr(fn = biPlus))
+    env.define("-", newFnExpr(fn = biMinus))
+    env.define("*", newFnExpr(fn = biStar))
+    env.define("/", newFnExpr(fn = biSlash, arity = 2))
+    env.define("<", newFnExpr(fn = biLess, arity = 2))
+    env.define(">", newFnExpr(fn = biGreater, arity = 2))
+    env.define("=", newFnExpr(fn = biEqual, arity = 2))
+
+    # unary
+    env.define("NUMBER?", newFnExpr(fn = biNUMBERQ, arity = 1))
+    env.define("SYMBOL?", newFnExpr(fn = biSYMBOLQ, arity = 1))
+    env.define("LIST?", newFnExpr(fn = biLISTQ, arity = 1))
+    env.define("NIL?", newFnExpr(fn = biNILQ, arity = 1))
+
+    # nary
+    env.define("AND?", newFnExpr(fn = biANDQ, delayEval = true))
+    env.define("OR?", newFnExpr(fn = biORQ, delayEval = true))
+
+    # lispisms
+    env.define("define", newFnExpr(fn = biDefine, delayEval = true, arity = 3))
+    env.define("set", newFnExpr(fn = biSet, delayEval = true, arity = 2))
+    env.define("car", newFnExpr(fn = biCar, arity = 1))
+    env.define("cdr", newFnExpr(fn = biCdr, arity = 1))
+    env.define("cons", newFnExpr(fn = biCons, arity = 2))
+    env.define("list", newFnExpr(fn = biList))
+    env.define("cond", newFnExpr(fn = biCond, delayEval = true))
+
 
 proc interpret*(expressions: seq[SExpr]): int =
     var env = newEnv()

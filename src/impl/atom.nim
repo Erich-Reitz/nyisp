@@ -10,6 +10,20 @@ type
 func initAtom*(num: float): Atom =
   Atom(kind: akNum, numVal: num)
 
+func initAtom*(v: bool): Atom =
+  if v == true:
+    Atom(kind: akTrue)
+  else:
+    Atom(kind: akNil)
+
+proc `==`*(a, b: Atom): bool =
+  if a.kind != b.kind:
+    result = false
+  else:
+    case a.kind
+    of akNil, akTrue: result = true
+    of akString, akIdentifier: result = a.strVal == b.strVal
+    of akNum: result = a.numVal == b.numVal
 
 func initAtom*(kind: akString..akIdentifier, str: string): Atom =
   Atom(kind: kind, strVal: str)

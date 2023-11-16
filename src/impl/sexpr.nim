@@ -1,11 +1,9 @@
+import std/options
 import std/tables
 
 import atom
 
 type
-
-
-
     SExprKind* = enum skAtom, skConsCell, skFn
     SExpr* = ref object of RootObj
         case kind*: SExprKind
@@ -14,13 +12,14 @@ type
         of skFn:
             fn*: proc (e: var Env, args: SExpr): SExpr
             delayEval*: bool = false
+            arity*: Option[int]
 
     ConsCell* = object
-        first*: SExpr
-        second*: SExpr
+        car*: SExpr
+        cdr*: SExpr
 
     Env* = ref object of RootObj
-        vars: Table[string, SExpr]
+        vars*: Table[string, SExpr]
 
 
 func newExpr*(a: Atom): SExpr =
@@ -30,62 +29,91 @@ func newExpr*(c: ConsCell): SExpr =
     SExpr(kind: skConsCell, consCell: c)
 
 
-func newExpr*(p: proc (e: var Env, args: SExpr): SExpr): SExpr =
-    SExpr(kind: skFn, fn: p)
+func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr): SExpr =
+    SExpr(kind: skFn, fn: fn)
 
-func newExpr*(p: proc (e: var Env, args: SExpr): SExpr,
+func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr,
         delayEval: bool): SExpr =
-    SExpr(kind: skFn, fn: p, delayEval: delayEval)
+    SExpr(kind: skFn, fn: fn, delayEval: delayEval)
+
+func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr,
+        delayEval: bool, arity: int): SExpr =
+    SExpr(kind: skFn, fn: fn, delayEval: delayEval, arity: some(arity))
+
+func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr,
+     arity: int): SExpr =
+    SExpr(kind: skFn, fn: fn, arity: some(arity))
+
+
+
 
 func toNum*(s: SExpr): float =
     case s.kind:
     of skAtom:
         return toNum(s.atom)
     else:
-        return toNum(s.consCell.first)
+        return toNum(s.consCell.car)
 
 func toNum*(c: ConsCell): float =
-    if c.first.kind != skAtom:
-        raise newException(Exception, "c.first.kind != skAtom")
+    if c.car.kind != skAtom:
+        raise newException(Exception, "c.car.kind != skAtom")
 
-    return toNum(c.first.atom)
+    return toNum(c.car.atom)
 
 func toStr*(s: SExpr): string =
     case s.kind:
     of skAtom:
         return toStr(s.atom)
     else:
-        return toStr(s.consCell.first)
+        return toStr(s.consCell.car)
 
 func toStr*(c: ConsCell): string =
-    if c.first.kind != skAtom:
-        raise newException(Exception, "c.first.kind != skAtom")
+    if c.car.kind != skAtom:
+        raise newException(Exception, "c.car.kind != skAtom")
 
-    return toStr(c.first.atom)
+    return toStr(c.car.atom)
 
-
-func car*(c: ConsCell): SExpr =
-    return c.first
-
-func cdr*(c: ConsCell): SExpr =
-    return c.second
 
 
 func car*(s: SExpr): SExpr =
     if s.kind != skConsCell:
         raise newException(Exception, "s.kind != skConsCell")
 
-    return car(s.consCell)
+    return s.consCell.car
 
 
 func cdr*(s: SExpr): SExpr =
     if s.kind != skConsCell:
         raise newException(Exception, "s.kind != skConsCell")
 
-    return cdr(s.consCell)
+    return s.consCell.cdr
 
-func cons*(a: SExpr, b: SExpr): SExpr =
-    return newExpr(ConsCell(first: a, second: b))
+func setCdr*(s: SExpr, cdr: SExpr) =
+    if s.kind != skConsCell:
+        raise newException(Exception, "s.kind != skConsCell")
+
+    s.consCell.cdr = cdr
+
+
+func isNilExpr*(s: SExpr): bool =
+    return s == nil or (s.kind == skAtom and s.atom.kind == akNil)
+
+
+func equalValues*(a, b: SExpr): bool =
+    if a == nil and b == nil: return true
+    if a == nil or b == nil: return false
+
+    if a.kind != b.kind: return false
+
+    case a.kind
+    of skAtom:
+        return a.atom == b.atom
+    else:
+        raise newException(Exception, "kind != skAtom")
+
+
+func cons*(a, b: SExpr): SExpr =
+    return newExpr(ConsCell(car: a, cdr: b))
 
 func newEnv*(): Env =
     result = Env(vars: initTable[string, SExpr]())
@@ -104,19 +132,19 @@ proc `$`*(e: SExpr): string =
     case e.kind
     of skAtom: return $e.atom
     of skConsCell:
-        if e.consCell.first.kind == skAtom and e.consCell.second == nil:
-            return $e.consCell.first.atom
+        if e.consCell.car.kind == skAtom and e.consCell.cdr == nil:
+            return $e.consCell.car.atom
 
         result = "("
         var currentCell = e.consCell
         var isfirst = true
         while true:
             if isfirst == false: result.add " "
-            result &= $currentCell.first
+            result &= $currentCell.car
 
             isfirst = false
 
-            let cdr = currentCell.second
+            let cdr = currentCell.cdr
             if cdr == nil: break
             currentCell = cdr.consCell
 

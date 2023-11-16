@@ -64,7 +64,7 @@ proc sExpression(p: var Parser): SExpr =
     if match(p, tkRightParen):
         return newExpr(initNilAtom())
 
-    let nilConsCell = ConsCell(first: nil, second: nil)
+    let nilConsCell = ConsCell(car: nil, cdr: nil)
     var sentinel = newExpr(nilConsCell)
 
     var cur = sentinel
@@ -74,15 +74,14 @@ proc sExpression(p: var Parser): SExpr =
             quit(QuitFailure)
 
         let exp = expression(p)
-        let newCell = newExpr(ConsCell(first: exp, second: nil))
+        let newCell = newExpr(ConsCell(car: exp, cdr: nil))
 
-
-        cur.consCell.second = newCell
+        cur.consCell.cdr = newCell
         cur = newCell
 
     discard consume(p, tkRightParen, "expected )")
 
-    return sentinel.consCell.second
+    return sentinel.consCell.cdr
 
 
 proc expression(p: var Parser): SExpr =
