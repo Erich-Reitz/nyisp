@@ -18,7 +18,7 @@ func indicatesIden(c: char, s: Scanner): bool =
 
 
 proc parseNum(s: var Scanner) =
-    let num = lFloat(s.source.substr(s.start))
+    let num = lFloat(s)
     let atm = initAtom(num)
     let token = initToken(atm, s.line)
 

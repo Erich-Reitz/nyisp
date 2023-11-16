@@ -2,33 +2,17 @@ import std/strutils
 
 import scanner
 
-proc gatherWhile(s: string, predicate: proc (
-        c: char): bool {.closure.}): string =
-    for c in s:
-        if predicate(c):
-            result.add(c)
-        else:
-            break
-    return result
 
-proc predGatherNumber(): proc(c: char): bool =
-    var periodEncountered = false
-    var isFirst = true
-    return proc(c: char): bool =
-        if c == '-' and isFirst:
-            isFirst = false
-            return true
-        isFirst = false
-        if isDigit(c): return true
+proc lFloat*(s: var Scanner): float =
+    while isDigit(peek(s)):
+        discard advance(s)
 
-        if c == '.' and not periodEncountered:
-            periodEncountered = true
-            return true
+    if peek(s) == '.' and isDigit(peekNext(s)):
+        discard advance(s)
+        while isDigit(peek(s)):
+            discard advance(s)
 
-        return false
-
-proc lFloat*(str: string): float =
-    let floatStr = gatherWhile(str, predGatherNumber())
+    let floatStr = s.source.substr(s.start, s.current - 1)
     parseFloat(floatStr)
 
 

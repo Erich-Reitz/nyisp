@@ -25,27 +25,23 @@ type
 func newExpr*(a: Atom): SExpr =
     SExpr(kind: skAtom, atom: a)
 
-func newExpr*(c: ConsCell): SExpr =
-    SExpr(kind: skConsCell, consCell: c)
+func newExpr*(cc: ConsCell): SExpr =
+    SExpr(kind: skConsCell, consCell: cc)
 
-
-func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr): SExpr =
+func newFnExpr*(fn: proc (env: var Env, args: SExpr): SExpr): SExpr =
     SExpr(kind: skFn, fn: fn)
 
-func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr,
+func newFnExpr*(fn: proc (env: var Env, args: SExpr): SExpr,
         delayEval: bool): SExpr =
     SExpr(kind: skFn, fn: fn, delayEval: delayEval)
 
-func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr,
+func newFnExpr*(fn: proc (env: var Env, args: SExpr): SExpr,
         delayEval: bool, arity: int): SExpr =
     SExpr(kind: skFn, fn: fn, delayEval: delayEval, arity: some(arity))
 
-func newFnExpr*(fn: proc (e: var Env, args: SExpr): SExpr,
+func newFnExpr*(fn: proc (env: var Env, args: SExpr): SExpr,
      arity: int): SExpr =
     SExpr(kind: skFn, fn: fn, arity: some(arity))
-
-
-
 
 func toNum*(s: SExpr): float =
     case s.kind:
@@ -54,11 +50,11 @@ func toNum*(s: SExpr): float =
     else:
         return toNum(s.consCell.car)
 
-func toNum*(c: ConsCell): float =
-    if c.car.kind != skAtom:
+func toNum*(cc: ConsCell): float =
+    if cc.car.kind != skAtom:
         raise newException(Exception, "c.car.kind != skAtom")
 
-    return toNum(c.car.atom)
+    return toNum(cc.car.atom)
 
 func toStr*(s: SExpr): string =
     case s.kind:
@@ -67,12 +63,11 @@ func toStr*(s: SExpr): string =
     else:
         return toStr(s.consCell.car)
 
-func toStr*(c: ConsCell): string =
-    if c.car.kind != skAtom:
+func toStr*(cc: ConsCell): string =
+    if cc.car.kind != skAtom:
         raise newException(Exception, "c.car.kind != skAtom")
 
-    return toStr(c.car.atom)
-
+    return toStr(cc.car.atom)
 
 
 func car*(s: SExpr): SExpr =
@@ -94,12 +89,17 @@ func setCdr*(s: SExpr, cdr: SExpr) =
 
     s.consCell.cdr = cdr
 
+proc `$`*(e: SExpr): string
 
 proc len*(args: SExpr): int =
-    var ePtr = args
-    while ePtr != nil:
-        result += 1
-        ePtr = cdr(ePtr)
+    if args.kind == skAtom:
+        return 1
+    if args.kind == skConsCell:
+        if args.cdr == nil:
+            return 1
+        return 1 + len(args.cdr)
+
+    raise newException(Exception, "args.kind != skAtom and args.kind != skConsCell")
 
 func isNilExpr*(s: SExpr): bool =
     return s == nil or (s.kind == skAtom and s.atom.kind == akNil)
@@ -124,14 +124,14 @@ func cons*(a, b: SExpr): SExpr =
 func newEnv*(): Env =
     result = Env(vars: initTable[string, SExpr]())
 
-func lookup*(e: Env, s: string): SExpr =
-    if e.vars.contains(s):
-        return e.vars[s]
+func lookup*(env: Env, s: string): SExpr =
+    if env.vars.contains(s):
+        return env.vars[s]
 
     return nil
 
-func define*(e: Env, s: string, v: SExpr) =
-    e.vars[s] = v
+func define*(env: Env, s: string, v: SExpr) =
+    env.vars[s] = v
 
 proc `$`*(e: SExpr): string =
     if e == nil: return "nil"

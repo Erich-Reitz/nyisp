@@ -14,10 +14,10 @@ func advance*(s: var Scanner): char =
     result = s.source[s.current]
     s.current = s.current + 1
 
-func addToken*(s: var Scanner, tokType: TokenType) =
+func addToken*(s: var Scanner, tkType: TokenType) =
     let line = s.line
 
-    let token = initToken(tokType, line)
+    let token = initToken(tkType, line)
     s.tokens.add(token)
 
 func addToken*(s: var Scanner, token: Token) =
@@ -28,6 +28,13 @@ func peek*(s: Scanner): char =
         return '\n'
 
     s.source[s.current]
+
+func peekNext*(s: Scanner): char =
+    if s.current + 1 >= len(s.source):
+        return '\0'
+
+    s.source[s.current + 1]
+
 
 
 

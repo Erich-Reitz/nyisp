@@ -58,6 +58,7 @@ proc atomExpression(p: var Parser): SExpr =
 
         return newExpr(get(atm.atom))
 
+    echo "matching nil"
     return newExpr(initNilAtom())
 
 proc sExpression(p: var Parser): SExpr =
@@ -72,6 +73,7 @@ proc sExpression(p: var Parser): SExpr =
         if isAtEnd(p):
             echo "parse error: unmatched parenthesis"
             quit(QuitFailure)
+
 
         let exp = expression(p)
         let newCell = newExpr(ConsCell(car: exp, cdr: nil))

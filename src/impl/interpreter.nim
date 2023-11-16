@@ -16,16 +16,15 @@ proc biGreater(env: var Env, args: SExpr): SExpr =
     newExpr(initAtom(toNum(car(args)) > toNum(car(cdr(args)))))
 
 proc biCar(env: var Env, args: SExpr): SExpr =
-    let res = car(car(args))
-    if res == nil:
+    result = car(car(args))
+    if result == nil:
         raise newException(EvalError, "car of empty list")
-    return res
 
 proc biCdr(env: var Env, args: SExpr): SExpr =
-    let res = cdr(car(args))
-    if res == nil:
+    result = cdr(car(args))
+    if result == nil:
         raise newException(EvalError, "cdr of empty list")
-    return res
+
 
 proc biPlus(env: var Env, args: SExpr): SExpr =
     var res: float = 0.0
@@ -251,6 +250,7 @@ proc interpret*(expressions: seq[SExpr]): int =
     var env = newEnv()
     defineBuiltins(env)
     for exp in expressions:
+
         let res = evaluate(env, exp)
         echo $res
 
