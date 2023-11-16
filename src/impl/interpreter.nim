@@ -92,7 +92,8 @@ proc biDefine(env: var Env, args: SExpr): SExpr =
 
         return evaluate(localEnv, body)
 
-    define(env, fnName, newFnExpr(newFn))
+
+    define(env, fnName, newFnExpr(fn = newFn, arity = len(paramExpr)))
 
     newExpr(initAtom(akIdentifier, fnName))
 
@@ -172,14 +173,6 @@ proc evaluteArgs(env: var Env, args: SExpr): SExpr =
     cons(evaluate(env, car(args)), evaluteArgs(env, cdr(args)))
 
 
-proc len(args: SExpr): int =
-    var ePtr = args
-    while ePtr != nil:
-        result += 1
-        ePtr = cdr(ePtr)
-
-
-
 proc assertArity(exp: SExpr, args: SExpr): SExpr =
     if isSome(exp.arity) and len(args) != exp.arity.get:
         raise newException(EvalError, "wrong number of arguments: " &
@@ -237,17 +230,14 @@ proc defineBuiltins(env: var Env) =
     env.define(">", newFnExpr(fn = biGreater, arity = 2))
     env.define("=", newFnExpr(fn = biEqual, arity = 2))
 
-    # unary
     env.define("NUMBER?", newFnExpr(fn = biNUMBERQ, arity = 1))
     env.define("SYMBOL?", newFnExpr(fn = biSYMBOLQ, arity = 1))
     env.define("LIST?", newFnExpr(fn = biLISTQ, arity = 1))
     env.define("NIL?", newFnExpr(fn = biNILQ, arity = 1))
 
-    # nary
     env.define("AND?", newFnExpr(fn = biANDQ, delayEval = true))
     env.define("OR?", newFnExpr(fn = biORQ, delayEval = true))
 
-    # lispisms
     env.define("define", newFnExpr(fn = biDefine, delayEval = true, arity = 3))
     env.define("set", newFnExpr(fn = biSet, delayEval = true, arity = 2))
     env.define("car", newFnExpr(fn = biCar, arity = 1))

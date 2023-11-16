@@ -95,6 +95,12 @@ func setCdr*(s: SExpr, cdr: SExpr) =
     s.consCell.cdr = cdr
 
 
+proc len*(args: SExpr): int =
+    var ePtr = args
+    while ePtr != nil:
+        result += 1
+        ePtr = cdr(ePtr)
+
 func isNilExpr*(s: SExpr): bool =
     return s == nil or (s.kind == skAtom and s.atom.kind == akNil)
 
