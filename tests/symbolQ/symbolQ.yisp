@@ -1,0 +1,4 @@
+(set a 5) 
+(SYMBOL? a) 
+(set b a) 
+(SYMBOL? b) 
