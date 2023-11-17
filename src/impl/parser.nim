@@ -84,12 +84,20 @@ proc sExpression(p: var Parser): SExpr =
 
     return sentinel.consCell.cdr
 
+proc quoteExpression(p: var Parser): SExpr =
+    let quotedExpr = expression(p)
+    return cons(newExpr(initAtom(kind = akIdentifier, "quote")), cons(
+            quotedExpr, nil))
+
 
 proc expression(p: var Parser): SExpr =
     if match(p, tkLeftParen):
         return sExpression(p)
+    elif match(p, tkQuote):
+        return quoteExpression(p)
+    else:
+        return atomExpression(p)
 
-    return atomExpression(p)
 
 
 proc parse*(tokens: seq[Token]): seq[SExpr] =

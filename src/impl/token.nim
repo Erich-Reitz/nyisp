@@ -5,7 +5,7 @@ import atom
 
 type
   TokenType* = enum
-    tkLeftParen, tkRightParen, tkAtom, tkEOF
+    tkLeftParen, tkRightParen, tkAtom, tkQuote, tkEOF
 
   Token* = object
     typ*: TokenType

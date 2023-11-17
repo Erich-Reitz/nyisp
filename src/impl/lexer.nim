@@ -47,6 +47,8 @@ proc scanToken(s: var Scanner) =
         addToken(s, tkLeftParen)
     of ')':
         addToken(s, tkRightParen)
+    of '\'':
+        addToken(s, tkQuote)
     of ';':
         while ((peek(s) != '\n') and (isAtEnd(s) == false)):
             discard advance(s)
@@ -56,6 +58,7 @@ proc scanToken(s: var Scanner) =
         s.line += 1
     of '"':
         parseString(s)
+
     else:
         if indicatesDigit(c, s) == true:
             parseNum(s)

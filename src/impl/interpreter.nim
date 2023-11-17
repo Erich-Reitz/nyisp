@@ -167,6 +167,11 @@ proc biCond(env: var Env, args: SExpr): SExpr =
 
     newExpr(initAtom(false))
 
+
+proc biQuote(env: var Env, args: SExpr): SExpr =
+    car(args)
+
+
 proc evaluteArgs(env: var Env, args: SExpr): SExpr =
     if args == nil:
         return nil
@@ -245,6 +250,7 @@ proc defineBuiltins(env: var Env) =
     env.define("cons", newFnExpr(fn = biCons, arity = 2))
     env.define("list", newFnExpr(fn = biList))
     env.define("cond", newFnExpr(fn = biCond, delayEval = true))
+    env.define("quote", newFnExpr(fn = biQuote, delayEval = true, arity = 1))
 
 
 proc interpret*(expressions: seq[SExpr]): int =
