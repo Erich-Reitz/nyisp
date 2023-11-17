@@ -93,6 +93,9 @@ suite "integration tests":
   test "symbolQ":
     check runTest("symbolQ")
 
+  test "nilQ":
+    check runTest("nilQ") 
+
   test "basicvar":
     check runTest("basicvar")
   
