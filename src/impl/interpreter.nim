@@ -264,7 +264,7 @@ proc defineBuiltins(env: var Env) =
     env.define("=", newFnExpr(fn = biEqual, arity = 2))
 
     env.define("NUMBER?", newFnExpr(fn = biNUMBERQ, arity = 1))
-    env.define("SYMBOL?", newFnExpr(fn = biSYMBOLQ, delayEval = true, arity = 1))
+    env.define("SYMBOL?", newFnExpr(fn = biSYMBOLQ, arity = 1))
     env.define("LIST?", newFnExpr(fn = biLISTQ, arity = 1))
     env.define("NIL?", newFnExpr(fn = biNILQ, arity = 1))
 
