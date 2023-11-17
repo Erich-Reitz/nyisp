@@ -1,0 +1,3 @@
+(OR? () ()) ; nil or nil = nil
+(OR? (= 2 2) ()) ; true or nil = true
+(OR? (= 2 2) (= 2 2)) ; true or true = true

@@ -80,3 +80,9 @@ suite "integration tests":
 
   test "div":
     check runTest("div")
+
+  test "and":
+    check runTest("and")
+
+  test "or":
+    check runTest("or")
