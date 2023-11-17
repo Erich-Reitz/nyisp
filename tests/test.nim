@@ -77,3 +77,6 @@ suite "integration tests":
   
   test "mult":
     check runTest("mult")
+
+  test "div":
+    check runTest("div")
