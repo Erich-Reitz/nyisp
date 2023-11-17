@@ -111,4 +111,20 @@ suite "integration tests":
   test "eq":
     check runTest("eq")
   
-
+  test "greater":
+    check runTest("greater") 
+  
+  test "less":
+    check runTest("less") 
+  
+  test "list":
+    check runTest("list") 
+  
+  test "numlit":
+    check runTest("numlit") 
+  
+  test "strlit":
+    check runTest("strlit")
+  
+  test "sum2":
+    check runTest("sum2") 

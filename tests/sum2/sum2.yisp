@@ -1,0 +1,5 @@
+(define sum2 (v1 v2) 
+ (+ v1 v2)
+)
+
+(sum2 1 2)
