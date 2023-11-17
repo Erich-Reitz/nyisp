@@ -1,3 +1,14 @@
+import math
+
+func isInteger(value: float, epsilon: float = 1e-10): bool =
+  return abs(ceil(value) - value) < epsilon or abs(floor(value) - value) < epsilon
+
+func yispRepr(value: float): string =
+  if isInteger(value):
+    result = $int(value)
+  else:
+    result = $value
+
 type
   AtomKind* = enum akNil, akTrue, akNum, akString, akIdentifier
 
@@ -47,4 +58,4 @@ proc `$`*(a: Atom): string =
   of akTrue: result = "t"
   of akString: result = a.strVal
   of akIdentifier: result = a.strVal
-  of akNum: result = $a.numVal
+  of akNum: result = yispRepr(a.numVal)

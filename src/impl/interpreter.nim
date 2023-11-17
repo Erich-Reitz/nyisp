@@ -81,7 +81,9 @@ proc biDefine(env: var Env, args: SExpr): SExpr =
 
         var paramIt = paramExpr
         var argIt = args
-        while paramIt != nil and argIt != nil:
+
+
+        while paramIt != nil and argIt != nil and paramIt.kind == skConsCell:
             let paramName = toStr(car(paramIt))
             let argValue = evaluate(localEnv, car(argIt))
             define(localEnv, paramName, argValue)
@@ -217,7 +219,6 @@ proc evaluate(env: var Env, exp: SExpr): SExpr =
     of skAtom: result = evaluate(env, exp.atom)
     of skConsCell: result = evaluate(env, exp.consCell)
     of skFn: result = exp
-
 
 proc defineBuiltins(env: var Env) =
     # operators

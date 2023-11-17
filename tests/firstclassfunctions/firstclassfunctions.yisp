@@ -1,0 +1,11 @@
+(define twice (f x)
+  (f (f x))
+)
+
+(define square (x) 
+  (* x x)
+)
+
+(set sq square)
+
+(twice sq 2) ; ==> 16
