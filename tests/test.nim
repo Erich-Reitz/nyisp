@@ -23,24 +23,18 @@ proc runTest(testname: string): bool =
   let output = runTestFile(testname)
   let expectedOutput = expectedTestOutput(testname)
 
-  if output == expectedOutput:
-    return true
-  
-  echo "test failed: " & testname
-  echo "expected output:"
-  echo expectedOutput
-  echo "actual output:"
-  echo output
-  return false
+  return output == expectedOutput
 
 
 suite "integration tests":
+  # compile main program once before executing tests
+  let res = osproc.execCmd("nimble build")
+  if res != 0:
+    echo "failed to compile"
+    quit(QuitFailure)
+  
   setup:
-    # compile main program
-    let res = osproc.execCmd("nimble build")
-    if res != 0:
-      echo "failed to compile"
-      quit(QuitFailure)
+    discard
     
   test "factorial":
     check runTest("factorial") 
@@ -53,3 +47,6 @@ suite "integration tests":
   
   test "lambda":
     check runTest("lambda")
+
+  test "minus":
+    check runTest("minus")
