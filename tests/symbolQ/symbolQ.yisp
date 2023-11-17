@@ -2,3 +2,4 @@
 (SYMBOL? a) 
 (set b a) 
 (SYMBOL? b) 
+(SYMBOL? 'a)
