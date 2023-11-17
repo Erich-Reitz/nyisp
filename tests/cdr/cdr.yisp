@@ -1,0 +1,5 @@
+(cdr (list 1 2 3))                    ; Expected output: (2 3)
+(cdr (list (list 1 2) (list 3 4)))    ; Expected output: ((3 4))
+(cdr (list (list (list 1 2) 3) 4))    ; Expected output: (4)
+(cdr (list "hello" "world"))          ; Expected output: ("world")
+(cdr (cdr (list 1 2 3 4)))            ; Expected output: (3 4)

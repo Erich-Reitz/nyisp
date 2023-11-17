@@ -96,3 +96,19 @@ suite "integration tests":
   test "basicvar":
     check runTest("basicvar")
   
+  test "car":
+    check runTest("car")
+  
+  test "cdr":
+    check runTest("cdr")
+
+  test "cond":
+    check runTest("cond")
+  
+  test "cons":
+    check runTest("cons")
+  
+  test "eq":
+    check runTest("eq")
+  
+

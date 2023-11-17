@@ -133,26 +133,29 @@ func lookup*(env: Env, s: string): SExpr =
 func define*(env: Env, s: string, v: SExpr) =
     env.vars[s] = v
 
+
 proc `$`*(e: SExpr): string =
     if e == nil: return "nil"
     case e.kind
     of skAtom: return $e.atom
     of skConsCell:
-        if e.consCell.car.kind == skAtom and e.consCell.cdr == nil:
-            return $e.consCell.car.atom
-
         result = "("
         var currentCell = e.consCell
         var isfirst = true
         while true:
             if isfirst == false: result.add " "
             result &= $currentCell.car
-
             isfirst = false
 
             let cdr = currentCell.cdr
-            if cdr == nil: break
-            currentCell = cdr.consCell
+            if cdr != nil:
+                if cdr.kind == skConsCell:
+                    currentCell = cdr.consCell
+                else:
+                    result &= " " & $cdr.atom
+                    break
+            else:
+                break
 
         result.add ")"
     of skFn:

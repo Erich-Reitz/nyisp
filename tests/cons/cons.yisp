@@ -1,0 +1,4 @@
+(cons 1 (list 2 3 4))                       ; Expected output: (1 2 3 4)
+(cons (list 1 2) (list 3 4))                ; Expected output: ((1 2) 3 4)
+(cons (list (list 1 2) 3) (list 4))         ; Expected output: (((1 2) 3) 4)
+(cons "hello" (list "world"))               ; Expected output: ("hello" "world")

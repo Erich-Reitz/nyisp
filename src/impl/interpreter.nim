@@ -16,12 +16,12 @@ proc biGreater(env: var Env, args: SExpr): SExpr =
     newExpr(initAtom(toNum(car(args)) > toNum(car(cdr(args)))))
 
 proc biCar(env: var Env, args: SExpr): SExpr =
-    result = car(car(args))
+    result = car(evaluate(env, args))
     if result == nil:
         raise newException(EvalError, "car of empty list")
 
 proc biCdr(env: var Env, args: SExpr): SExpr =
-    result = cdr(car(args))
+    result = cdr(evaluate(env, args))
     if result == nil:
         raise newException(EvalError, "cdr of empty list")
 
