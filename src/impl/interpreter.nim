@@ -172,6 +172,34 @@ proc biQuote(env: var Env, args: SExpr): SExpr =
     car(args)
 
 
+proc biLambda(env: var Env, args: SExpr): SExpr =
+    let paramExpr = car(args)
+    let body = cdr(args)
+
+    # <copy>
+    let definedVariables = env.vars
+
+    let newFn = proc(e: var Env, args: SExpr): SExpr =
+        var localEnv = newEnv()
+        # <place>
+        localEnv.vars = definedVariables
+
+        var paramIt = paramExpr
+        var argIt = args
+
+        while paramIt != nil and argIt != nil and paramIt.kind == skConsCell:
+            let paramName = toStr(car(paramIt))
+            let argValue = evaluate(localEnv, car(argIt))
+            define(localEnv, paramName, argValue)
+
+            paramIt = cdr(paramIt)
+            argIt = cdr(argIt)
+
+        return evaluate(localEnv, body)
+
+    return newFnExpr(newFn)
+
+
 proc evaluteArgs(env: var Env, args: SExpr): SExpr =
     if args == nil:
         return nil
@@ -251,6 +279,7 @@ proc defineBuiltins(env: var Env) =
     env.define("list", newFnExpr(fn = biList))
     env.define("cond", newFnExpr(fn = biCond, delayEval = true))
     env.define("quote", newFnExpr(fn = biQuote, delayEval = true, arity = 1))
+    env.define("lambda", newFnExpr(fn = biLambda, delayEval = true, arity = 2))
 
 
 proc interpret*(expressions: seq[SExpr]): int =

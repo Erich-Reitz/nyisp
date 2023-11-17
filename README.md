@@ -34,7 +34,12 @@ Run `ysip <filename>` to execute a file. There is no REPL support.
 
 (factorial 5)
 ```
-#### First class Functions
+#### Lambdas, first class functions
+```
+(set square (lambda (x) (* x x)))
+(square 36)
+```
+
 ```
 (define twice (f x)
   (f (f x))
@@ -48,6 +53,3 @@ Run `ysip <filename>` to execute a file. There is no REPL support.
 
 (twice sq 2) ; ==> 16
 ```
-
-### Fun facts
-This interpreter written in nim is 1.4x times faster than my "equivalent" interpreter written in C++ when computing naive fibonacci(27).

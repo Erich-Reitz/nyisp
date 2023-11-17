@@ -1,0 +1,2 @@
+(set square (lambda (x) (* x x)))
+(square 36)

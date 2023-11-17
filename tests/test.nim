@@ -50,3 +50,6 @@ suite "integration tests":
 
   test "firstclassfunctions":
     check runTest("firstclassfunctions")
+  
+  test "lambda":
+    check runTest("lambda")
