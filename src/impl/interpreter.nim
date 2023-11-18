@@ -135,24 +135,28 @@ proc biCons(env: var Env, args: SExpr): SExpr =
     cons(evaluate(env, car(args)), evaluate(env, cdr(args)))
 
 
-proc biList(env: var Env, args: SExpr): SExpr =
-    if args == nil:
-        return nil
-
+proc apply(fn: proc (e: var Env, args: SExpr): SExpr, env: var Env,
+        args: SExpr): SExpr =
     var argit = args
-    var evaluated = evaluate(env, car(argit))
+    var evaluated = fn(env, car(argit))
     var head = cons(evaluated, nil)
     var cur = head
 
     argit = cdr(argit)
 
     while argit != nil:
-        cur.setCdr(cons(evaluate(env, car(argit)), nil))
+        cur.setCdr(cons(fn(env, car(argit)), nil))
         cur = cur.cdr
         argit = cdr(argit)
 
     head
 
+
+proc biList(env: var Env, args: SExpr): SExpr =
+    if args == nil:
+        return nil
+
+    apply(evaluate, env, args)
 
 proc biCond(env: var Env, args: SExpr): SExpr =
     var condValuePair = args
@@ -198,6 +202,16 @@ proc biLambda(env: var Env, args: SExpr): SExpr =
         return evaluate(localEnv, body)
 
     return newFnExpr(newFn)
+
+
+proc biApply(env: var Env, args: SExpr): SExpr =
+    if args == nil:
+        return nil
+
+    var argit = args
+
+    let fn = evaluate(env, car(argit))
+    apply(fn.fn, env, cdr(argit))
 
 
 proc evaluteArgs(env: var Env, args: SExpr): SExpr =
@@ -280,6 +294,7 @@ proc defineBuiltins(env: var Env) =
     env.define("cond", newFnExpr(fn = biCond, delayEval = true))
     env.define("quote", newFnExpr(fn = biQuote, delayEval = true, arity = 1))
     env.define("lambda", newFnExpr(fn = biLambda, delayEval = true, arity = 2))
+    env.define("apply", newFnExpr(fn = biApply, arity = 2))
 
 
 proc interpret*(expressions: seq[SExpr]): int =
