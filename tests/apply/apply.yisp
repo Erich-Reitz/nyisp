@@ -1,0 +1,7 @@
+(set numbers '(4 1 7 3 2))
+
+(apply + numbers)
+
+(set lengths '(5 10 15))
+
+(apply * lengths)

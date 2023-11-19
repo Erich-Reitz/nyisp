@@ -135,8 +135,16 @@ proc biCons(env: var Env, args: SExpr): SExpr =
     cons(evaluate(env, car(args)), evaluate(env, cdr(args)))
 
 
-proc apply(fn: proc (e: var Env, args: SExpr): SExpr, env: var Env,
-        args: SExpr): SExpr =
+
+
+
+
+proc biList(env: var Env, args: SExpr): SExpr =
+    if args == nil:
+        return nil
+
+    let fn = evaluate
+
     var argit = args
     var evaluated = fn(env, car(argit))
     var head = cons(evaluated, nil)
@@ -151,19 +159,13 @@ proc apply(fn: proc (e: var Env, args: SExpr): SExpr, env: var Env,
 
     head
 
-
-proc biList(env: var Env, args: SExpr): SExpr =
-    if args == nil:
-        return nil
-
-    apply(evaluate, env, args)
-
 proc biCond(env: var Env, args: SExpr): SExpr =
     var condValuePair = args
     while condValuePair != nil:
         let cond = car(car(condValuePair))
         let resultExpr = cdr(car(condValuePair))
         let conditionResult = evaluate(env, cond)
+
         if isNilExpr(conditionResult) == false:
             return evaluate(env, resultExpr)
 
@@ -211,7 +213,10 @@ proc biApply(env: var Env, args: SExpr): SExpr =
     var argit = args
 
     let fn = evaluate(env, car(argit))
-    apply(fn.fn, env, cdr(argit))
+
+    # need to use car here.
+    fn.fn(env, car(cdr(argit)))
+
 
 
 proc evaluteArgs(env: var Env, args: SExpr): SExpr =

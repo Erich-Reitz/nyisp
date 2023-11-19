@@ -131,3 +131,6 @@ suite "integration tests":
   
   test "sum2":
     check runTest("sum2") 
+
+  test "apply":
+    check runTest("apply")
