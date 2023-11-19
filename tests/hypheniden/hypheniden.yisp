@@ -1,2 +1,5 @@
 (set a_b 1)
 a_b
+
+(set c-b 2)
+c-b
