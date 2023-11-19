@@ -137,3 +137,7 @@ suite "integration tests":
   
   test "mapcar":
     check runTest("mapcar") 
+  
+  test "hypheniden":
+    check runTest("hypheniden") 
+    
