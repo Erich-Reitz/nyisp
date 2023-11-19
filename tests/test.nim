@@ -134,3 +134,6 @@ suite "integration tests":
 
   test "apply":
     check runTest("apply")
+  
+  test "mapcar":
+    check runTest("mapcar") 

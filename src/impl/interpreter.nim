@@ -135,10 +135,6 @@ proc biCons(env: var Env, args: SExpr): SExpr =
     cons(evaluate(env, car(args)), evaluate(env, cdr(args)))
 
 
-
-
-
-
 proc biList(env: var Env, args: SExpr): SExpr =
     if args == nil:
         return nil
@@ -203,7 +199,7 @@ proc biLambda(env: var Env, args: SExpr): SExpr =
 
         return evaluate(localEnv, body)
 
-    return newFnExpr(newFn)
+    newFnExpr(newFn)
 
 
 proc biApply(env: var Env, args: SExpr): SExpr =
@@ -216,6 +212,32 @@ proc biApply(env: var Env, args: SExpr): SExpr =
 
     # need to use car here.
     fn.fn(env, car(cdr(argit)))
+
+
+proc biMapcar(env: var Env, args: SExpr): SExpr =
+    if args == nil:
+        return nil
+
+    var mapCarArgIt = args
+
+    let fn = evaluate(env, car(mapCarArgIt)).fn
+
+    let listOfArgs = cdr(mapCarArgIt)
+    var argListIt = car(listOfArgs)
+
+    var evaluated = fn(env, argListIt)
+
+    var head = cons(evaluated, nil)
+    var cur = head
+
+    argListIt = cdr(argListIt)
+
+    while argListIt != nil:
+        cur.setCdr(cons(fn(env, argListIt), nil))
+        cur = cur.cdr
+        argListIt = cdr(argListIt)
+
+    head
 
 
 
@@ -239,7 +261,7 @@ proc processArgs(env: var Env, fnExpr: SExpr, args: SExpr): SExpr =
     if fnExpr.delayEval == false:
         return assertArity(fnExpr, evaluteArgs(env, args))
 
-    return assertArity(fnExpr, args)
+    assertArity(fnExpr, args)
 
 proc doFn(env: var Env, exp: SExpr, args: SExpr): SExpr =
     exp.fn(env, processArgs(env, exp, args))
@@ -300,6 +322,7 @@ proc defineBuiltins(env: var Env) =
     env.define("quote", newFnExpr(fn = biQuote, delayEval = true, arity = 1))
     env.define("lambda", newFnExpr(fn = biLambda, delayEval = true, arity = 2))
     env.define("apply", newFnExpr(fn = biApply, arity = 2))
+    env.define("mapcar", newFnExpr(fn = biMapcar, arity = 2))
 
 
 proc interpret*(expressions: seq[SExpr]): int =
