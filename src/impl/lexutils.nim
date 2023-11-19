@@ -29,9 +29,11 @@ proc lStr*(s: var Scanner): string =
 
     s.source.substr(s.start, s.current - 1)
 
+func allowedIdentifierChar(c: char): bool =
+    isAlphaNumeric(c) or @['_', '?', '-'].contains(c)
 
 proc lIden*(s: var Scanner): string =
-    while isAlphaNumeric(peek(s)) or peek(s) == '?':
+    while allowedIdentifierChar(peek(s)):
         discard advance(s)
 
     s.source.substr(s.start, s.current - 1)
