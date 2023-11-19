@@ -38,11 +38,16 @@ proc biPlus(env: var Env, args: SExpr): SExpr =
 proc biMinus(env: var Env, args: SExpr): SExpr =
     var ePtr = args
     var res = toNum(car(ePtr))
+    var operands = 1
     ePtr = cdr(ePtr)
     while ePtr != nil:
         res -= toNum(car(ePtr))
+        operands += 1
         ePtr = cdr(ePtr)
 
+    if operands == 1:
+        res = -res
+    
     newExpr(initAtom(res))
 
 proc biStar(env: var Env, args: SExpr): SExpr =
