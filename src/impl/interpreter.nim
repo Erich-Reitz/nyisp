@@ -273,6 +273,8 @@ proc biMapcar(env: var Env, args: SExpr): SExpr =
     head
 
 
+proc biPROCEDUREQ(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(car(args).kind == skFn))
 
 proc evaluteArgs(env: var Env, args: SExpr): SExpr =
     if args == nil:
@@ -357,6 +359,7 @@ proc defineBuiltins(env: var Env) =
     env.define("apply", newFnExpr(fn = biApply, arity = 2))
     env.define("mapcar", newFnExpr(fn = biMapcar, arity = 2))
     env.define("filter", newFnExpr(fn = biFilter, arity = 2))
+    env.define("PROCEDURE?", newFnExpr(fn = biPROCEDUREQ, arity = 1))
 
 
 proc interpret*(expressions: seq[SExpr]): int =

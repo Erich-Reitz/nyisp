@@ -3,6 +3,35 @@
 Lisp dialect for CS 403 project
 
 
+## Definitions/Semantics:
+Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpdir/scheme-7.4/doc-html/scheme_3.html)
+
+
+### Special Forms
+
+- `lambda` is implemented:
+  - `lambda (args) expr`
+
+- `set` is implemented:
+  - `set iden expr` and `expr` is evaluated immediately in the current environment. 
+
+- `define` is implemented:
+  - `define iden (args) expr`
+
+- `cond` is implemented and is lazy evaluated
+
+- `if` is not implemented
+
+### Procedure Operations
+
+- `apply` is implemented
+  - `apply procedure list`
+
+- `procedureQ` is implemented as a way to test if an object is a procedure
+
+### Primitive Procedures
+
+
 ## Development Environment
 
 This project is written in the [Nim](https://nim-lang.org/) programming language and requires version 

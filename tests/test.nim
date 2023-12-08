@@ -143,4 +143,7 @@ suite "integration tests":
   
   test "filterpos":
     check runTest("filterpos")
+
+  test "procedureQ":
+    check runTest("procedureQ")
     

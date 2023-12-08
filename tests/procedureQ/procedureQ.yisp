@@ -1,0 +1,9 @@
+(PROCEDURE? +) ; true
+
+(set a 5) ; nil
+
+(PROCEDURE? a) ; nil
+
+(define fn (x) (+ x 1)) ; fn not for false, but cause its the name
+
+(PROCEDURE? fn) ; true
