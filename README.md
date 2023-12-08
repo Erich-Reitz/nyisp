@@ -27,7 +27,7 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
 - `apply` is implemented
   - `apply procedure list`
 
-- `procedureQ` is implemented as a way to test if an object is a procedure
+- `PROCEDURE?` is implemented as a way to test if an object is a procedure
 
 ### Primitive Procedures
 
