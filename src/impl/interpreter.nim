@@ -331,6 +331,7 @@ proc evaluate(env: var Env, exp: SExpr): SExpr =
 
 proc defineBuiltins(env: var Env) =
     # operators
+    env.define("t", SExpr(kind: skAtom, atom: initAtom(true)))
     env.define("+", newFnExpr(fn = biPlus))
     env.define("-", newFnExpr(fn = biMinus))
     env.define("*", newFnExpr(fn = biStar))

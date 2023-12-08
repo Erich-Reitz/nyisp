@@ -73,14 +73,16 @@ func toStr*(cc: ConsCell): string =
 
 func car*(s: SExpr): SExpr =
     if s.kind != skConsCell:
-        raise newException(Exception, "s.kind != skConsCell")
+        # TODO: I don't know
+        return s
 
     return s.consCell.car
 
 
 func cdr*(s: SExpr): SExpr =
     if s.kind != skConsCell:
-        raise newException(Exception, "s.kind != skConsCell")
+        # TODO: I don't know
+        return SExpr(kind: skAtom, atom: initNilAtom())
 
     return s.consCell.cdr
 

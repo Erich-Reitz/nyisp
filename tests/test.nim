@@ -19,30 +19,11 @@ proc runTestFile(testname: string): string =
   assert exitcode == 0
   return output
 
-proc annotateStringDiff(original: string, modified: string): string =
-    var i = 0
-    var j = 0
-
-    while i < original.len or j < modified.len:
-        if i < original.len and j < modified.len and original[i] == modified[j]:
-            result.add(original[i])
-            inc(i)
-            inc(j)
-        elif i < original.len and (j >= modified.len or original[i] notin modified):
-            result.add("-" & original[i])
-            inc(i)
-        elif j < modified.len:
-            result.add("+" & modified[j])
-            inc(j)
-
-
 proc runTest(testname: string): bool =
   let output = runTestFile(testname)
   let expectedOutput = expectedTestOutput(testname)
 
   result = output == expectedOutput
-  if result == false:
-    echo annotateStringDiff(output, expectedOutput)
 
 suite "integration tests":
   # compile main program once before executing tests
@@ -147,3 +128,8 @@ suite "integration tests":
   test "procedureQ":
     check runTest("procedureQ")
     
+  test "car_cdr_special_case":
+    check runTest("car_cdr_special_case")
+
+  test "lcm":
+    check runTest("lcm")

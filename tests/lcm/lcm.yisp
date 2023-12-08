@@ -1,0 +1,22 @@
+(define mod (a b)
+    (cond ((< a b) a)
+          (t (mod (- a b) b))))
+
+(define gcd (a b)
+    (cond ((= b 0) a)
+          (t (gcd b (mod a b)))))
+
+(define lcm (a b)
+  (/ (* a b) (gcd a b)))
+
+
+(define lcm-list (lst)
+  (cond 
+    ((NIL? (cdr lst)) (car lst))
+    (t (lcm (car lst) (lcm-list (cdr lst)))))
+)
+
+(lcm-list '(2 3))
+(lcm-list '(2 32))
+(lcm-list '(9 7))
+(lcm-list '(4 5))

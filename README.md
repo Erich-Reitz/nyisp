@@ -31,6 +31,68 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
 
 ### Primitive Procedures
 
+- `+` is implemented as the sum of its arguments. Only works over a single list of numbers
+  - `(+ 1.5 1.5 1 2 3) ; => 9`
+
+- `-` is similar, with the first argument being the minuend, rest subtrahend
+  - `(- 1.5 1.5 1 2 3) ; => -6`
+
+  - With a single argument, is will return its additive inverse.
+    `(- -5) ; => 5`
+
+- `*` provides the product
+  - `(* 2 1 2 3) ; => 12`
+
+- `/` only takes two arguments, and returns the quotient.
+
+- `<`, `=`, `>` are relational operators over two numerical arguments.
+
+- `cons` is implemented
+  - `(cons expr1 expr2 ); => (expr1 . expr2)`
+
+- `car` and `cdr` are implemented
+
+- `NUMBER?`, `SYMBOL?`, `LIST?` and `NIL?` are implemented as expected and each take a single argument.
+
+- `AND?` and `OR?` are lazy evaluated and take 1 or more arguments. They assess their arguments' truthiness, short-circuiting evaluation if they encounter nil (for AND) or a non-nil value (for OR).
+
+- `list` constructs a list with its arguments.
+
+- `quote` is implemented.
+
+- `mapcar` is implemented
+  - `(mapcar (lambda (x) (* x 2)) '(1 2 3 4 5)); => (2 4 6 8 10)`
+
+- `filter` is implemented
+  - `(filter (lambda (x) (> x 0 )) '(1 2 3 -1 -2 -3)); => (1 2 3)`
+
+
+## Example Program
+```
+(define mod (a b)
+    (cond ((< a b) a)
+          (t (mod (- a b) b))))
+
+(define gcd (a b)
+    (cond ((= b 0) a)
+          (t (gcd b (mod a b)))))
+
+(define lcm (a b)
+  (/ (* a b) (gcd a b)))
+
+
+(define lcm-list (lst)
+  (cond 
+    ((NIL? (cdr lst)) (car lst))
+    (t (lcm (car lst) (lcm-list (cdr lst)))))
+)
+
+(lcm-list '(2 3)) ; => 6
+(lcm-list '(2 32)) ; => 32
+(lcm-list '(9 7)) ; => 54
+(lcm-list '(4 5)) ; 20
+```
+
 
 ## Development Environment
 
