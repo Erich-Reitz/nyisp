@@ -47,7 +47,7 @@ proc biMinus(env: var Env, args: SExpr): SExpr =
 
     if operands == 1:
         res = -res
-    
+
     newExpr(initAtom(res))
 
 proc biStar(env: var Env, args: SExpr): SExpr =
@@ -207,6 +207,34 @@ proc biLambda(env: var Env, args: SExpr): SExpr =
     newFnExpr(newFn)
 
 
+proc biFilter(env: var Env, args: SExpr): SExpr =
+    if args == nil:
+        return nil
+
+    var filterArgIt = args
+
+    let fn = evaluate(env, car(filterArgIt)).fn
+
+    let listOfArgs = cdr(filterArgIt)
+    var argListIt = car(listOfArgs)
+
+    var head: SExpr = nil
+    var cur = head
+
+    while argListIt != nil:
+        let res = fn(env, argListIt)
+        if isNilExpr(res) == false:
+            if head == nil:
+                head = cons(car(argListIt), nil)
+                cur = head
+            else:
+                cur.setCdr(cons(car(argListIt), nil))
+                cur = cur.cdr
+
+        argListIt = cdr(argListIt)
+
+    head
+
 proc biApply(env: var Env, args: SExpr): SExpr =
     if args == nil:
         return nil
@@ -328,6 +356,7 @@ proc defineBuiltins(env: var Env) =
     env.define("lambda", newFnExpr(fn = biLambda, delayEval = true, arity = 2))
     env.define("apply", newFnExpr(fn = biApply, arity = 2))
     env.define("mapcar", newFnExpr(fn = biMapcar, arity = 2))
+    env.define("filter", newFnExpr(fn = biFilter, arity = 2))
 
 
 proc interpret*(expressions: seq[SExpr]): int =

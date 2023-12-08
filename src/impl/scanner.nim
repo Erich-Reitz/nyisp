@@ -34,11 +34,3 @@ func peekNext*(s: Scanner): char =
         return '\0'
 
     s.source[s.current + 1]
-
-
-
-
-
-
-
-

@@ -48,7 +48,8 @@ func toNum*(s: SExpr): float =
     of skAtom:
         return toNum(s.atom)
     else:
-        return toNum(s.consCell.car)
+        raise newException(Exception, "s.kind != skAtom")
+
 
 func toNum*(cc: ConsCell): float =
     if cc.car.kind != skAtom:

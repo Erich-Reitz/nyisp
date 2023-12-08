@@ -140,4 +140,7 @@ suite "integration tests":
   
   test "hypheniden":
     check runTest("hypheniden") 
+  
+  test "filterpos":
+    check runTest("filterpos")
     
