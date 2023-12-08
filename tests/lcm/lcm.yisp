@@ -1,7 +1,3 @@
-(define mod (a b)
-    (cond ((< a b) a)
-          (t (mod (- a b) b))))
-
 (define gcd (a b)
     (cond ((= b 0) a)
           (t (gcd b (mod a b)))))

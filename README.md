@@ -43,6 +43,8 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
 - `*` provides the product
   - `(* 2 1 2 3) ; => 12`
 
+- `mod` only takes two arguments.
+
 - `/` only takes two arguments, and returns the quotient.
 
 - `<`, `=`, `>` are relational operators over two numerical arguments.
@@ -67,12 +69,15 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
   - `(filter (lambda (x) (> x 0 )) '(1 2 3 -1 -2 -3)); => (1 2 3)`
 
 
+### Issues
+
+- The document says `=`: 
+  > compares the values of two atoms or (). Returns () when either expression is a larger list.
+
+  My program does not support lists being passed to `=`. It does support the empty list ().
+
 ## Example Program
 ```
-(define mod (a b)
-    (cond ((< a b) a)
-          (t (mod (- a b) b))))
-
 (define gcd (a b)
     (cond ((= b 0) a)
           (t (gcd b (mod a b)))))

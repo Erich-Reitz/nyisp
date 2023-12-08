@@ -1,4 +1,5 @@
 import std/options
+import std/math 
 
 import atom
 import sexpr
@@ -14,6 +15,10 @@ proc biLess(env: var Env, args: SExpr): SExpr =
 
 proc biGreater(env: var Env, args: SExpr): SExpr =
     newExpr(initAtom(toNum(car(args)) > toNum(car(cdr(args)))))
+
+proc biMod(env: var Env, args: SExpr): SExpr =
+    newExpr(initAtom(toNum(car(args)) mod toNum(car(cdr(args)))))
+
 
 proc biCar(env: var Env, args: SExpr): SExpr =
     result = car(evaluate(env, args))
@@ -360,6 +365,7 @@ proc defineBuiltins(env: var Env) =
     env.define("apply", newFnExpr(fn = biApply, arity = 2))
     env.define("mapcar", newFnExpr(fn = biMapcar, arity = 2))
     env.define("filter", newFnExpr(fn = biFilter, arity = 2))
+    env.define("mod", newFnExpr(fn = biMod, arity = 2))
     env.define("PROCEDURE?", newFnExpr(fn = biPROCEDUREQ, arity = 1))
 
 
