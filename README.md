@@ -94,7 +94,7 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
 
 (lcm-list '(2 3)) ; => 6
 (lcm-list '(2 32)) ; => 32
-(lcm-list '(9 7)) ; => 54
+(lcm-list '(9 7)) ; => 63
 (lcm-list '(4 5)) ; 20
 ```
 
