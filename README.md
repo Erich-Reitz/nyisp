@@ -76,6 +76,8 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
 
   My program does not support lists being passed to `=`. It does support the empty list ().
 
+- There is no REPL support
+
 ## Example Program
 ```
 (define gcd (a b)
@@ -144,7 +146,7 @@ project requires `Nimble` which is bundled with Nim installation. To the build t
 
 ### Testing
 The program used for testing can be viewed at `tests/test.nim`. The program will automatically execute each test case, invoking the yisp program with a specific test file located at `tests/<testname>/<testname>.yisp`. The expected output is 
-in the same folder, at `tests/<testname>/<testname>.out`.
+in the same folder, at `tests/<testname>/<testname>.out`. The test program captures the output of the process and asserts that it is equal to the expected output for the test.
 
 ## Usage
 Run `ysip <filename>` to execute a file. There is no REPL support.
