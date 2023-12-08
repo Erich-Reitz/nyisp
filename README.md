@@ -1,6 +1,6 @@
 # Yisp
 
-Lisp dialect for CS 403 project
+Interpreter for a lisp dialect for CS 403 project
 
 
 ## Definitions/Semantics:
