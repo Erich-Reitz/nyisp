@@ -15,4 +15,4 @@
 (lcm-list '(2 3))
 (lcm-list '(2 32))
 (lcm-list '(9 7))
-(lcm-list '(4 5))
+(lcm-list '(4 5 3 10 7))

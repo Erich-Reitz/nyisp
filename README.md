@@ -102,7 +102,7 @@ More programs to verify implementation can be found in tests directory
 (lcm-list '(2 3)) ; => 6
 (lcm-list '(2 32)) ; => 32
 (lcm-list '(9 7)) ; => 63
-(lcm-list '(4 5)) ; 20
+(lcm-list '(4 5 10 7)) ; 420
 ```
 
 #### Factorial
