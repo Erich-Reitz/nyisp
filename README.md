@@ -78,7 +78,12 @@ Language taken from [groups.csail.mit.edu](https://groups.csail.mit.edu/mac/ftpd
 
 - There is no REPL support
 
-## Example Program
+## Example Programs
+
+More programs to verify implementation can be found in tests directory
+
+
+#### LCM of numbers in a list
 ```
 (define gcd (a b)
     (cond ((= b 0) a)
