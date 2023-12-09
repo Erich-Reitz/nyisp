@@ -154,5 +154,5 @@ The program used for testing can be viewed at `tests/test.nim`. The program will
 in the same folder, at `tests/<testname>/<testname>.out`. The test program captures the output of the process and asserts that it is equal to the expected output for the test.
 
 ## Usage
-Run `ysip <filename>` to execute a file. There is no REPL support.
+Run `yisp <filename>` to execute a file. There is no REPL support.
 
